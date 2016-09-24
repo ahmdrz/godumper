@@ -10,6 +10,8 @@
 go get github.com/ahmdrz/godumper
 ```
 
+First of all...
+
 ```go
 package main
 
@@ -27,7 +29,11 @@ type Message struct {
 	Time     int64
 	IsReaded bool
 }
+```
 
+If you want to dump a slice
+
+```go
 var slice = []Message{
 	Message{
 		Id:       810625,
@@ -60,15 +66,66 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	dumper, err = dumper.Dump(slice)
+	
+	err = dumper.Dump(slice)
 	if err != nil {
 		panic(err)
 	}
+	
 	err = dumper.Save("result.csv")
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("The slice dumped to result.csv")
+}
+```
+
+Or if you want to dump an array...
+
+```go
+var array = [3]Message{
+	Message{
+		Id:       810625,
+		Time:     1475430311,
+		Text:     "Hi dude, Are you okay ?",
+		UserFrom: 812311,
+		UserTo:   722311,
+		IsReaded: true,
+	},
+	Message{
+		Id:       187236,
+		UserFrom: 722311,
+		UserTo:   812311,
+		Text:     "Hey buddy,I'm fine",
+		Time:     1475430322,
+		IsReaded: false,
+	},
+	Message{
+		Id:       715623,
+		UserFrom: 722311,
+		UserTo:   812311,
+		Text:     "😆😆😆 😛",
+		Time:     1475430621,
+		IsReaded: false,
+	},
+}
+
+func main() {
+	dumper, err := godumper.New(Message{})
+	if err != nil {
+		panic(err)
+	}
+	
+	err = dumper.Dump(array)
+	if err != nil {
+		panic(err)
+	}
+	
+	err = dumper.Save("result.csv")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("The array dumped to result.csv")
 }
 ```
 

@@ -30,7 +30,7 @@ func New(item interface{}) (*Dumper, error) {
 	}, nil
 }
 
-func (dumper *Dumper) Dump(datasets interface{}) (*Dumper, error) {
+func (dumper *Dumper) Dump(datasets interface{}) error {
 	items := reflect.ValueOf(datasets)
 	if items.Kind() == reflect.Slice || items.Kind() == reflect.Array {
 		result := make([][]string, items.Len())
@@ -44,20 +44,20 @@ func (dumper *Dumper) Dump(datasets interface{}) (*Dumper, error) {
 				v := reflect.Indirect(item)
 				for j := 0; j < v.NumField(); j++ {
 					if j >= len(result[i]) {
-						return nil, fmt.Errorf("index out of range , each indexes must same as header")
+						return fmt.Errorf("index out of range , each indexes must same as header")
 					}
 					result[i][j] = toString(v.Field(j).Interface())
 				}
 				dumper.Body = result
 			} else {
-				return nil, fmt.Errorf("not struct", item.Kind())
+				return fmt.Errorf("not struct", item.Kind())
 			}
 		}
 	} else {
-		return nil, fmt.Errorf("input should be a slice")
+		return fmt.Errorf("input should be a slice")
 	}
 
-	return dumper, nil
+	return nil
 }
 
 func toString(item interface{}) string {

@@ -81,9 +81,13 @@ func TestDumpSlice(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	dumper, err = dumper.Dump(slice)
+	err = dumper.Dump(slice)
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if len(dumper.Body) == 0 {
+		t.Fatal("Empty body")
 	}
 
 	t.Log(dumper.Body)
@@ -95,9 +99,13 @@ func TestDumpArray(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	dumper, err = dumper.Dump(array)
+	err = dumper.Dump(array)
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if len(dumper.Body) == 0 {
+		t.Fatal("Empty body")
 	}
 
 	t.Log(dumper.Body)
@@ -109,7 +117,7 @@ func TestSave(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	dumper, err = dumper.Dump(slice)
+	err = dumper.Dump(slice)
 	if err != nil {
 		t.Fatal(err)
 	}
