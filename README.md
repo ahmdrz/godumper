@@ -28,7 +28,7 @@ type Message struct {
 	IsReaded bool
 }
 
-var array = []Message{
+var slice = []Message{
 	Message{
 		Id:       810625,
 		Time:     1475430311,
@@ -60,7 +60,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	dumper, err = dumper.Dump(array)
+	dumper, err = dumper.Dump(slice)
 	if err != nil {
 		panic(err)
 	}
@@ -68,7 +68,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("The array dumped to result.csv")
+	fmt.Println("The slice dumped to result.csv")
 }
 ```
 
