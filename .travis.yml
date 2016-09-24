@@ -11,5 +11,8 @@ matrix:
     - go: 1.7
     - go: tip
 
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+before_install:
+  - go get github.com/mattn/goveralls
+  - go get golang.org/x/tools/cmd/cover
+script:
+  - $HOME/gopath/bin/goveralls -service=travis-ci
