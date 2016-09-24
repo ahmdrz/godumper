@@ -10,3 +10,6 @@ matrix:
     - go: 1.6
     - go: 1.7
     - go: tip
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
