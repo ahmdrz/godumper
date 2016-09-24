@@ -4,6 +4,11 @@
 [![Build Status](https://travis-ci.org/ahmdrz/godumper.svg?branch=master)](https://travis-ci.org/ahmdrz/godumper)
 [![GoDoc](https://godoc.org/github.com/ahmdrz/godumper?status.svg)](https://godoc.org/github.com/ahmdrz/godumper)
 
+- [x] Dump array of interfaces
+- [x] Dump slice of interfaces
+- [ ] Dump map of interfaces
+- [ ] ...
+
 ### How to use ?
 
 ```bash
