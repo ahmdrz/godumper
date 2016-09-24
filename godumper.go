@@ -1,4 +1,4 @@
-// godumper project godumper.go
+// This library can dump slice , array and etc to CSV files.
 package godumper
 
 import (
@@ -9,12 +9,21 @@ import (
 	"strconv"
 )
 
+// This struct contains Header , Type and Body.
+// Header is header of CSV file.
+// Body is 2D array for the body of CSV file.
+// And Type is the type of interface which you want to dump.
 type Dumper struct {
 	Header []string
 	Type   interface{}
 	Body   [][]string
 }
 
+// This method return an error only if
+//   Invalid input, input must be a struct
+// And return the Dumper struct as base of this library.
+// The input must be a struct.
+//   Todo : allow method to receive map values.
 func New(item interface{}) (*Dumper, error) {
 	dumper := reflect.ValueOf(item)
 	if dumper.Kind() != reflect.Struct {
@@ -30,6 +39,11 @@ func New(item interface{}) (*Dumper, error) {
 	}, nil
 }
 
+// This method return error if :
+// 	index out of range (body must be a child of header)
+//  not struct input for body
+//  input was not a slice or array
+// And after called , the body is ready for save or something else...
 func (dumper *Dumper) Dump(datasets interface{}) error {
 	items := reflect.ValueOf(datasets)
 	if items.Kind() == reflect.Slice || items.Kind() == reflect.Array {
@@ -54,12 +68,13 @@ func (dumper *Dumper) Dump(datasets interface{}) error {
 			}
 		}
 	} else {
-		return fmt.Errorf("input should be a slice")
+		return fmt.Errorf("input should be a slice or array")
 	}
 
 	return nil
 }
 
+// Change interface to string for saving to CSV file and making the body.
 func toString(item interface{}) string {
 	switch item.(type) {
 	case string:
@@ -78,6 +93,11 @@ func toString(item interface{}) string {
 	return ""
 }
 
+// This method return error if :
+//	can't create file.
+//  can't write header.
+//  can't write body
+// And after called , Header and Body will available in file.
 func (dumper *Dumper) Save(filename string) error {
 	file, err := os.Create(filename)
 	if err != nil {
