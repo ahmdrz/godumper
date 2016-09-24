@@ -32,7 +32,7 @@ func New(item interface{}) (*Dumper, error) {
 
 func (dumper *Dumper) Dump(datasets interface{}) (*Dumper, error) {
 	items := reflect.ValueOf(datasets)
-	if items.Kind() == reflect.Slice {
+	if items.Kind() == reflect.Slice || items.Kind() == reflect.Array {
 		result := make([][]string, items.Len())
 		for i := range result {
 			result[i] = make([]string, len(dumper.Header))
