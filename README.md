@@ -134,6 +134,26 @@ func main() {
 }
 ```
 
+### DumpAndSave
+
+If you use `Save` function , another `[][]string` will created and memory used by not important datas.
+
+So you can use `DumpAndSave` for save memory , see below :
+
+```go
+func main() {
+	dumper, err := godumper.New(Message{})
+	if err != nil {
+		panic(err)
+	}
+	err = dumper.DumpAndSave(array, "result.csv")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("The array dumped to result.csv")
+}
+```
+
 ### License 
 
 Read the license file
