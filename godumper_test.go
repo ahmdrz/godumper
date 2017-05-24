@@ -13,7 +13,7 @@ func GenerateRandomID() int {
 }
 
 type Message struct {
-	Id       int
+	Id       int `dump:"index"`
 	UserFrom int
 	UserTo   int
 	Text     string

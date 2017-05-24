@@ -27,7 +27,7 @@ import (
 )
 
 type Message struct {
-	Id       int
+	Id       int `dump:"index"`
 	UserFrom int
 	UserTo   int
 	Text     string
@@ -35,6 +35,8 @@ type Message struct {
 	IsReaded bool
 }
 ```
+
+**You can use `dump:"index"` for change header name**
 
 If you want to dump a slice
 
