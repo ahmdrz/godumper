@@ -6,10 +6,9 @@ import (
 	"fmt"
 	"os"
 	"reflect"
-	"strconv"
 )
 
-// This struct contains Header , Type and Body.
+// Dumper , This struct contains Header , Type and Body.
 // Header is header of CSV file.
 // Body is 2D array for the body of CSV file.
 // And Type is the type of interface which you want to dump.
@@ -19,7 +18,7 @@ type Dumper struct {
 	Body   [][]string
 }
 
-// This method return an error only if
+// New , This method return an error only if
 //   Invalid input, input must be a struct
 // And return the Dumper struct as base of this library.
 // The input must be a struct.
@@ -39,13 +38,13 @@ func New(item interface{}) (*Dumper, error) {
 	}, nil
 }
 
-// This method return error if :
+// Dump This method return error if :
 // 	index out of range (body must be a child of header)
 //  not struct input for body
 //  input was not a slice or array
 // And after called , the body is ready for save or something else...
-func (dumper *Dumper) Dump(datasets interface{}) error {
-	items := reflect.ValueOf(datasets)
+func (dumper *Dumper) Dump(inputSet interface{}) error {
+	items := reflect.ValueOf(inputSet)
 	if items.Kind() == reflect.Slice || items.Kind() == reflect.Array {
 		result := make([][]string, items.Len())
 		for i := range result {
@@ -64,7 +63,7 @@ func (dumper *Dumper) Dump(datasets interface{}) error {
 				}
 				dumper.Body = result
 			} else {
-				return fmt.Errorf("not struct", item.Kind())
+				return fmt.Errorf("not struct %v ", item.Kind())
 			}
 		}
 	} else {
@@ -76,24 +75,10 @@ func (dumper *Dumper) Dump(datasets interface{}) error {
 
 // Change interface to string for saving to CSV file and making the body.
 func toString(item interface{}) string {
-	switch item.(type) {
-	case string:
-		return item.(string)
-	case int:
-		return strconv.Itoa(item.(int))
-	case int64:
-		return strconv.FormatInt(item.(int64), 10)
-	case bool:
-		if item.(bool) == true {
-			return "true"
-		} else {
-			return "false"
-		}
-	}
-	return ""
+	return fmt.Sprintf("%v", item)
 }
 
-// This method return error if :
+// Save This method return error if :
 //	can't create file.
 //  can't write header.
 //  can't write body
@@ -120,5 +105,53 @@ func (dumper *Dumper) Save(filename string) error {
 	}
 
 	defer writer.Flush()
+	return nil
+}
+
+// DumpAndSave This method return error if :
+// 	index out of range (body must be a child of header)
+//  not struct input for body
+//  input was not a slice or array
+// And after called , the body is ready for save or something else...
+func (dumper *Dumper) DumpAndSave(inputSet interface{}, output string) error {
+	file, err := os.Create(output)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	err = writer.Write(dumper.Header)
+	if err != nil {
+		return err
+	}
+
+	items := reflect.ValueOf(inputSet)
+	if items.Kind() == reflect.Slice || items.Kind() == reflect.Array {
+		for i := 0; i < items.Len(); i++ {
+			item := items.Index(i)
+			result := make([]string, len(dumper.Header))
+			if item.Kind() == reflect.Struct {
+				v := reflect.Indirect(item)
+				for j := 0; j < v.NumField(); j++ {
+					if j >= len(dumper.Header) {
+						return fmt.Errorf("index out of range , each indexes must same as header")
+					}
+					result[j] = toString(v.Field(j).Interface())
+				}
+				err = writer.Write(result)
+				if err != nil {
+					return err
+				}
+			} else {
+				return fmt.Errorf("not struct %v", item.Kind())
+			}
+		}
+	} else {
+		return fmt.Errorf("input should be a slice or array")
+	}
+
 	return nil
 }

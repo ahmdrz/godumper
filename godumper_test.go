@@ -19,6 +19,7 @@ type Message struct {
 	Text     string
 	Time     int64
 	IsReaded bool
+	ByteTest byte
 }
 
 var slice = []Message{
@@ -29,6 +30,7 @@ var slice = []Message{
 		UserFrom: GenerateRandomID(),
 		UserTo:   GenerateRandomID(),
 		IsReaded: true,
+		ByteTest: byte(1),
 	},
 	Message{
 		Id:       GenerateRandomID(),
@@ -37,6 +39,7 @@ var slice = []Message{
 		Text:     "Hey buddy,I'm fine",
 		Time:     time.Now().Unix() + int64(GenerateRandomID()),
 		IsReaded: false,
+		ByteTest: byte(2),
 	},
 	Message{
 		Id:       GenerateRandomID(),
@@ -45,6 +48,7 @@ var slice = []Message{
 		Text:     "😆😆😆 😛",
 		Time:     time.Now().Unix() + int64(GenerateRandomID()),
 		IsReaded: true,
+		ByteTest: byte(3),
 	},
 }
 
@@ -122,6 +126,18 @@ func TestSave(t *testing.T) {
 		t.Fatal(err)
 	}
 	err = dumper.Save("result.csv")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestDumpAndSave(t *testing.T) {
+	dumper, err := New(Message{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = dumper.DumpAndSave(slice, "dumpAndSave.csv")
 	if err != nil {
 		t.Fatal(err)
 	}
