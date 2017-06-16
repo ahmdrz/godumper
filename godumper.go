@@ -31,8 +31,10 @@ func New(item interface{}) (*Dumper, error) {
 	header := make([]string, 0)
 	for i := 0; i < dumper.NumField(); i++ {
 		field := dumper.Type().Field(i)
-		if len(field.Tag.Get("dump")) > 0 {
-			header = append(header, field.Tag.Get("dump"))
+		tag := field.Tag.Get("dump")
+		// TODO : ignore `-` tag.
+		if len(tag) > 0 {
+			header = append(header, tag)
 		} else {
 			header = append(header, field.Name)
 		}
