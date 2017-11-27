@@ -72,7 +72,7 @@ var array = [2]Message{
 }
 
 func TestNewDumper(t *testing.T) {
-	dumper, err := New(Message{})
+	dumper, err := New(Message{}, CSV)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -80,7 +80,7 @@ func TestNewDumper(t *testing.T) {
 }
 
 func TestDumpSlice(t *testing.T) {
-	dumper, err := New(Message{})
+	dumper, err := New(Message{}, CSV)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -98,7 +98,7 @@ func TestDumpSlice(t *testing.T) {
 }
 
 func TestDumpArray(t *testing.T) {
-	dumper, err := New(Message{})
+	dumper, err := New(Message{}, CSV)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -116,7 +116,7 @@ func TestDumpArray(t *testing.T) {
 }
 
 func TestSave(t *testing.T) {
-	dumper, err := New(Message{})
+	dumper, err := New(Message{}, CSV)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -131,8 +131,24 @@ func TestSave(t *testing.T) {
 	}
 }
 
+func TestXSLXSave(t *testing.T) {
+	dumper, err := New(Message{}, XSLX)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = dumper.Dump(slice)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = dumper.Save("result.xslx")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestDumpAndSave(t *testing.T) {
-	dumper, err := New(Message{})
+	dumper, err := New(Message{}, CSV)
 	if err != nil {
 		t.Fatal(err)
 	}

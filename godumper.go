@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+
+	"github.com/tealeg/xlsx"
 )
 
 // Dumper , This struct contains Header , Type and Body.
@@ -13,17 +15,26 @@ import (
 // Body is 2D array for the body of CSV file.
 // And Type is the type of interface which you want to dump.
 type Dumper struct {
-	Header []string
-	Type   interface{}
-	Body   [][]string
+	Header     []string
+	Type       interface{}
+	Body       [][]string
+	outputType int
 }
+
+const (
+	XSLX int = 10 << iota
+	CSV
+)
 
 // New , This method return an error only if
 //   Invalid input, input must be a struct
 // And return the Dumper struct as base of this library.
 // The input must be a struct.
 //   Todo : allow method to receive map values.
-func New(item interface{}) (*Dumper, error) {
+func New(item interface{}, outputType int) (*Dumper, error) {
+	if outputType != XSLX && outputType != CSV {
+		return nil, fmt.Errorf("Invalid output type")
+	}
 	dumper := reflect.ValueOf(item)
 	if dumper.Kind() != reflect.Struct {
 		return nil, fmt.Errorf("Invalid input, input must be a struct")
@@ -40,8 +51,9 @@ func New(item interface{}) (*Dumper, error) {
 		}
 	}
 	return &Dumper{
-		Type:   item,
-		Header: header,
+		Type:       item,
+		Header:     header,
+		outputType: outputType,
 	}, nil
 }
 
@@ -91,28 +103,54 @@ func toString(item interface{}) string {
 //  can't write body
 // And after called , Header and Body will available in file.
 func (dumper *Dumper) Save(filename string) error {
-	file, err := os.Create(filename)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	writer := csv.NewWriter(file)
-
-	err = writer.Write(dumper.Header)
-	if err != nil {
-		return err
-	}
-
-	for _, value := range dumper.Body {
-		err = writer.Write(value)
+	if dumper.outputType == CSV {
+		file, err := os.Create(filename)
 		if err != nil {
 			return err
 		}
-	}
+		defer file.Close()
+		writer := csv.NewWriter(file)
+		defer writer.Flush()
 
-	defer writer.Flush()
-	return nil
+		err = writer.Write(dumper.Header)
+		if err != nil {
+			return err
+		}
+
+		for _, value := range dumper.Body {
+			err = writer.Write(value)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	} else {
+		var err error
+
+		file := xlsx.NewFile()
+		sheet, err := file.AddSheet("SHEET1")
+		if err != nil {
+			return err
+		}
+		headerRow := sheet.AddRow()
+		for _, headerItem := range dumper.Header {
+			cell := headerRow.AddCell()
+			cell.Value = headerItem
+		}
+		for _, row := range dumper.Body {
+			singleRow := sheet.AddRow()
+			for _, rowCell := range row {
+				cell := singleRow.AddCell()
+				cell.Value = rowCell
+			}
+		}
+		err = file.Save(filename)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 }
 
 // DumpAndSave This method return error if :
