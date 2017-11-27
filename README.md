@@ -1,5 +1,5 @@
 # godumper
-> Dump array of interfaces to CSV files.
+> Dump array of interfaces to CSV/XSLX files.
 
 [![Build Status](https://travis-ci.org/ahmdrz/godumper.svg?branch=master)](https://travis-ci.org/ahmdrz/godumper)
 [![GoDoc](https://godoc.org/github.com/ahmdrz/godumper?status.svg)](https://godoc.org/github.com/ahmdrz/godumper)
@@ -69,7 +69,7 @@ var slice = []Message{
 }
 
 func main() {
-	dumper, err := godumper.New(Message{})
+	dumper, err := godumper.New(Message{}, godumper.CSV)
 	if err != nil {
 		panic(err)
 	}
@@ -118,7 +118,7 @@ var array = [3]Message{
 }
 
 func main() {
-	dumper, err := godumper.New(Message{})
+	dumper, err := godumper.New(Message{}, godumper.XSLX)
 	if err != nil {
 		panic(err)
 	}
@@ -128,11 +128,11 @@ func main() {
 		panic(err)
 	}
 	
-	err = dumper.Save("result.csv")
+	err = dumper.Save("result.xslx")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("The array dumped to result.csv")
+	fmt.Println("The array dumped to result.xslx")
 }
 ```
 
@@ -144,7 +144,7 @@ So you can use `DumpAndSave` for save memory , see below :
 
 ```go
 func main() {
-	dumper, err := godumper.New(Message{})
+	dumper, err := godumper.New(Message{}, godumper.CSV)
 	if err != nil {
 		panic(err)
 	}
